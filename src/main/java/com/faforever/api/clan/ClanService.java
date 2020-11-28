@@ -22,7 +22,7 @@ import org.springframework.util.Assert;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +58,10 @@ public class ClanService {
     });
 
     clan.setLeader(player);
-    clan.setMemberships(List.of(new ClanMembership()
-      .setClan(clan)
-      .setPlayer(player)));
+    final ClanMembership clanMembership = new ClanMembership();
+    clanMembership.setClan(clan);
+    clanMembership.setPlayer(player);
+    clan.setMemberships(Set.of(clanMembership));
   }
 
   @SneakyThrows
