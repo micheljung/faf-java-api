@@ -48,8 +48,8 @@ public class Clan extends AbstractEntity implements OwnableEntity {
   private String description;
   private String tagColor;
   private String websiteUrl;
+  private Boolean requiresInvitation = Boolean.TRUE;
   private Set<ClanMembership> memberships;
-  private Boolean requiresInvitation;
 
   @Column(name = "name")
   @NotNull
