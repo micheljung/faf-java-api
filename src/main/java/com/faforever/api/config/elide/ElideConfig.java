@@ -26,9 +26,11 @@ import com.faforever.api.security.elide.permission.WriteUserGroupCheck;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yahoo.elide.Elide;
 import com.yahoo.elide.ElideSettingsBuilder;
+import com.yahoo.elide.core.DataStore;
 import com.yahoo.elide.core.EntityDictionary;
 import com.yahoo.elide.core.filter.dialect.CaseSensitivityStrategy;
 import com.yahoo.elide.core.filter.dialect.RSQLFilterDialect;
+import com.yahoo.elide.datastores.search.SearchDataStore;
 import com.yahoo.elide.jsonapi.JsonApiMapper;
 import com.yahoo.elide.security.checks.Check;
 import com.yahoo.elide.utils.coerce.CoerceUtil;
@@ -41,6 +43,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -52,12 +55,12 @@ public class ElideConfig {
   public static final String DEFAULT_CACHE_NAME = "Elide.defaultCache";
 
   @Bean
-  public Elide elide(SpringHibernateDataStore springHibernateDataStore, ObjectMapper objectMapper, EntityDictionary entityDictionary, ExtendedAuditLogger extendedAuditLogger) {
+  public Elide elide(SearchDataStore searchStore, ObjectMapper objectMapper, EntityDictionary entityDictionary, ExtendedAuditLogger extendedAuditLogger) {
     RSQLFilterDialect rsqlFilterDialect = new RSQLFilterDialect(entityDictionary, new CaseSensitivityStrategy.UseColumnCollation());
 
     registerAdditionalConverters();
 
-    return new Elide(new ElideSettingsBuilder(springHibernateDataStore)
+    return new Elide(new ElideSettingsBuilder(searchStore)
       .withJsonApiMapper(new JsonApiMapper(entityDictionary, objectMapper))
       .withAuditLogger(extendedAuditLogger)
       .withEntityDictionary(entityDictionary)
@@ -71,6 +74,11 @@ public class ElideConfig {
                                                     AutowireCapableBeanFactory beanFactory,
                                                     EntityManager entityManager) {
     return new SpringHibernateDataStore(txManager, beanFactory, entityManager, false, true, ScrollMode.FORWARD_ONLY);
+  }
+
+  @Bean
+  SearchDataStore searchStore(SpringHibernateDataStore springHibernateDataStore, EntityManagerFactory entityManagerFactory) {
+    return new SearchDataStore(springHibernateDataStore, entityManagerFactory,true);
   }
 
   /**

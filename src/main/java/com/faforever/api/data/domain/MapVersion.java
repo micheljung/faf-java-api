@@ -12,6 +12,12 @@ import com.yahoo.elide.annotation.Include;
 import com.yahoo.elide.annotation.UpdatePermission;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -31,6 +37,7 @@ import java.util.List;
 @EntityListeners(MapVersionEnricher.class)
 @Table(name = "map_version")
 @Include(rootLevel = true, type = MapVersion.TYPE_NAME)
+@Indexed
 public class MapVersion extends AbstractEntity implements OwnableEntity {
 
   public static final String TYPE_NAME = "mapVersion";
@@ -55,6 +62,8 @@ public class MapVersion extends AbstractEntity implements OwnableEntity {
 
   @UpdatePermission(expression = IsEntityOwner.EXPRESSION + " or " + AdminMapCheck.EXPRESSION)
   @Column(name = "description")
+  @Field(index = Index.YES, analyze = Analyze.YES,
+    store = Store.NO, analyzer = @Analyzer(definition = "case_insensitive"))
   public String getDescription() {
     return description;
   }

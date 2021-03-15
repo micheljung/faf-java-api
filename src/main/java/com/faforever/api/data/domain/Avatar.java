@@ -8,6 +8,10 @@ import com.yahoo.elide.annotation.ComputedAttribute;
 import com.yahoo.elide.annotation.Include;
 import com.yahoo.elide.annotation.UpdatePermission;
 import lombok.Setter;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Store;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -42,6 +46,8 @@ public class Avatar extends AbstractEntity {
 
   @Column(name = "filename")
   @NotNull
+  @Field(index = Index.YES, analyze = Analyze.YES,
+    store = Store.NO)
   public String getFilename() { return filename; }
 
   @Column(name = "tooltip")

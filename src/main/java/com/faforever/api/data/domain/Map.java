@@ -10,6 +10,12 @@ import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.JoinColumnOrFormula;
 import org.hibernate.annotations.JoinColumnsOrFormulas;
 import org.hibernate.annotations.JoinFormula;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Analyzer;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Store;
 import org.jetbrains.annotations.Nullable;
 
 import javax.persistence.CascadeType;
@@ -36,6 +42,7 @@ import java.util.List;
 @Include(rootLevel = true, type = Map.TYPE_NAME)
 @Immutable
 @EntityListeners(MapChangeListener.class)
+@Indexed
 public class Map extends AbstractEntity implements OwnableEntity {
 
   public static final String TYPE_NAME = "map";
@@ -52,6 +59,8 @@ public class Map extends AbstractEntity implements OwnableEntity {
   @Column(name = "display_name", unique = true)
   @Size(max = 100)
   @NotNull
+  @Field(index = Index.YES, analyze = Analyze.YES,
+    store = Store.NO, analyzer = @Analyzer(definition = "case_insensitive"))
   public String getDisplayName() {
     return displayName;
   }
