@@ -21,7 +21,7 @@ public class IsEntityOwner {
     public boolean ok(OwnableEntity entity, RequestScope requestScope, Optional<ChangeSpec> changeSpec) {
       final ElideUser caller = (ElideUser) requestScope.getUser();
       return entity.getEntityOwner() != null
-        && entity.getEntityOwner().getId().equals(caller.getFafUserDetails().map(FafUserDetails::getId).orElse(null));
+        && entity.getEntityOwner().getId().equals(caller.getFafUserDetailsOrAnonymous().map(FafUserDetails::getId).orElse(null));
     }
   }
 }

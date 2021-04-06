@@ -54,12 +54,12 @@ abstract class FafUserCheck extends UserCheck {
   }
 
   protected boolean checkUserPermission(User user, String... userPermissionRole) {
-    if (!(user instanceof ElideUser) || ((ElideUser) user).getFafUserDetails().isEmpty()) {
+    if (!(user instanceof ElideUser) || ((ElideUser) user).getFafUserDetailsOrAnonymous().isEmpty()) {
       log.warn("UserCheck applied on wrong User type: {}", user.getPrincipal());
       return false;
     }
 
-    FafUserDetails userDetails = ((ElideUser) user).getFafUserDetails().get();
+    FafUserDetails userDetails = ((ElideUser) user).getFafUserDetailsOrAnonymous().get();
 
     Set<String> grantedUserRoles = userDetails.getAuthorities().stream()
       .map(GrantedAuthority::getAuthority)
