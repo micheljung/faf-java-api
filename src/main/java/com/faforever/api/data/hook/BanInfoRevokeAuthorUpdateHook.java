@@ -15,7 +15,7 @@ public class BanInfoRevokeAuthorUpdateHook implements LifeCycleHook<BanInfo> {
   @Override
   public void execute(Operation operation, TransactionPhase phase, BanInfo banInfo, RequestScope requestScope, Optional<ChangeSpec> changes) {
     final ElideUser caller = (ElideUser) requestScope.getUser();
-    caller.getFafUserDetails().ifPresent(fafUserDetails -> {
+    caller.getFafUserDetailsOrAnonymous().ifPresent(fafUserDetails -> {
       final Player callerPlayer = new Player();
       callerPlayer.setId(fafUserDetails.getId());
       banInfo.setRevokeAuthor(callerPlayer);

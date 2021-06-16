@@ -1,6 +1,7 @@
 package com.faforever.api.security;
 
 import com.yahoo.elide.core.security.User;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 
 import java.security.Principal;
@@ -18,15 +19,23 @@ public class ElideUser extends User {
 
   @Override
   public String getName() {
-    return getFafUserDetails().map(details -> details.getUsername()).orElse("");
+    return getFafUserDetailsOrAnonymous().map(details -> details.getUsername()).orElse("");
   }
 
   @Override
   public boolean isInRole(String role) {
-    return getFafUserDetails().map(details -> details.hasPermission(role)).orElse(false);
+    return getFafUserDetailsOrAnonymous().map(details -> details.hasPermission(role)).orElse(false);
   }
 
-  public Optional<FafUserDetails> getFafUserDetails() {
+  public Optional<FafUserDetails> getFafUserDetailsOrAnonymous() {
     return Optional.ofNullable(fafUserDetails);
+  }
+
+  public FafUserDetails getFafUserDetails() {
+    if (fafUserDetails != null) {
+      return fafUserDetails;
+    } else {
+      throw new AccessDeniedException("Anonymous access");
+    }
   }
 }
